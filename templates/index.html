@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exiled Bot 2 Unique Item Filter Generator</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0d120d;
+            color: #b3b3b3;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto;
+            background: #161f16;
+            padding: 20px;
+            border-radius: 8px;
+            border: solid 1px #090c09;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; /* Wichtig: Verhindert, dass Padding die Breite vergrößert */
+        }
+        h1 {
+            color: #b3b3b3;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #161f16;
+            background: #131712;
+            color: #b3b3b3;
+            border-radius: 4px;
+            width: 150px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #131712;
+            border: none;
+            color: #b3b3b3;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1c261f;
+        }
+        .results {
+            width: 100%;
+            margin-top: 20px;
+            box-sizing: border-box; /* Wichtig für die Scrollbar */
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #1c261f;
+            color: #b3b3b3;
+            border: 1px solid #090c09;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+            box-sizing: border-box; /* Wichtig: Padding wird in Breite eingerechnet */
+            overflow-x: hidden; /* Verhindert horizontales Scrollen */
+            white-space: pre-wrap; /* Zeilenumbruch für lange Zeilen */
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: #090c09;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #131712;
+            animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .copy-button {
+            padding: 10px 20px;
+            background: #131712;
+            border: none;
+            color: #b3b3b3;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-button:hover {
+            background: #1c261f;
+        }
+        
+        .copy-button.success {
+            background: #1a3320;
+        }
+        
+        .copy-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Exiled Bot 2 Unique Item Filter Generator</h1>
+        <form method="POST">
+            <div class="input-group">
+                <label>Minimum Exalted Price:</label>
+                <input type="number" name="min_exalted" step="0.1" value="{{ min_exalted|default(10) }}">
+                <button type="submit" onclick="showLoading()">Generate</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <p>Generating filter...</p>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+
+        {% if categories %}
+        <div class="results">
+            <textarea id="filterOutput" readonly>{% for category, items in categories.items() %}
+// {{ category }}
+{% for item in items %}{{ item.line }}
+{% endfor %}
+{% endfor %}</textarea>
+            <div class="button-group">
+                <button class="copy-button" onclick="copyToClipboard()">
+                    <svg class="copy-icon" viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy to Clipboard
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('filterOutput');
+            textarea.select();
+            document.execCommand('copy');
+            
+            const button = document.querySelector('.copy-button');
+            button.textContent = 'Copied!';
+            button.classList.add('success');
+            
+            setTimeout(() => {
+                button.innerHTML = `
+                    <svg class="copy-icon" viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy to Clipboard
+                `;
+                button.classList.remove('success');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
