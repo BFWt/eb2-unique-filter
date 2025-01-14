@@ -1,80 +1,82 @@
 from flask import Flask, render_template, request
 import requests
-import json
-from datetime import datetime, timedelta
 import time
+import json
 import os
+from datetime import datetime, timedelta
 
 app = Flask(__name__, template_folder='../templates')
 
-CACHE_FILE = 'cache/items.json'
-CATEGORIES = [
-    "accessory",
-    "armour",
-    "flask",
-    "jewel",
-    "sanctum",
-    "weapon"
-]
+CACHE_DIR = 'cache'
+CACHE_DURATION = timedelta(hours=1)
 
-def load_cached_data():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, 'r') as f:
-            cache = json.load(f)
-            if datetime.now() - datetime.fromisoformat(cache['timestamp']) < timedelta(hours=1):
-                return cache['data']
+def get_cache_path(category):
+    return os.path.join(CACHE_DIR, f'{category}.json')
+
+def load_cached_data(category):
+    cache_path = get_cache_path(category)
+    if os.path.exists(cache_path):
+        with open(cache_path, 'r') as f:
+            cached = json.load(f)
+            if datetime.fromisoformat(cached['timestamp']) + CACHE_DURATION > datetime.now():
+                return cached['data']
     return None
 
-def save_cache(data):
-    os.makedirs('cache', exist_ok=True)
-    with open(CACHE_FILE, 'w') as f:
+def save_cache(category, data):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    cache_path = get_cache_path(category)
+    with open(cache_path, 'w') as f:
         json.dump({
             'timestamp': datetime.now().isoformat(),
             'data': data
         }, f)
 
-def fetch_category(category):
-    url = f"https://poe2scout.com/api/items/{category}?league=Standard"
+def fetch_category_data(category, min_exalted_price):
+    cached_data = load_cached_data(category)
+    if cached_data:
+        return cached_data
+    
+    url = f"https://poe2scout.com/api/items/{category}?per_page=200&league=Standard"
     response = requests.get(url)
-    time.sleep(2)  # Pause zwischen Anfragen
-    return category, response.json()
+    data = response.json()
+    save_cache(category, data)
+    return data
 
-def update_cache():
+def scrape_poe_categories(min_exalted_price):
+    categories = ['accessory', 'armour', 'flask', 'jewel', 'sanctum', 'weapon']
     all_items = {}
-    for category in CATEGORIES:
-        category_upper = category.upper()
-        category_data = fetch_category(category)
-        if category_data:
-            all_items[category_upper] = category_data[1]
-    save_cache(all_items)
-    return all_items
-
-def get_items(min_exalted_price):
-    data = load_cached_data()
-    if not data:
-        data = update_cache()
     
-    filtered_items = {}
-    for category, items in data.items():
-        category_items = []
-        for item in items['items']:
-            if item['unique'] and 'latest_price' in item:
-                exalted_price = item['latest_price']['nominal_price']
-                if exalted_price >= min_exalted_price:
-                    category_items.append({
-                        'line': f'[Type] == "{item["type"]}" && [Rarity] == "Unique" # [StashItem] == "true" // {item["name"]} Value: {int(exalted_price)}',
-                        'price': exalted_price
-                    })
-        if category_items:
-            filtered_items[category] = sorted(category_items, key=lambda x: x['price'], reverse=True)
-    
-    return filtered_items
+    try:
+        for category in categories:
+            data = fetch_category_data(category, min_exalted_price)
+            items = []
+            
+            for item in data['items']:
+                if item['unique'] and 'latest_price' in item:
+                    name = item['name']
+                    item_type = item['type']
+                    exalted_price = item['latest_price']['nominal_price']
+                    
+                    if exalted_price >= min_exalted_price:
+                        items.append({
+                            'line': f'[Type] == "{item_type}" && [Rarity] == "Unique" # [StashItem] == "true" // {name} Value: {int(exalted_price)}',
+                            'price': exalted_price
+                        })
+            
+            if items:
+                category_name = category.upper()
+                all_items[category_name] = sorted(items, key=lambda x: x['price'], reverse=True)
+        
+        return all_items
+        
+    except Exception as e:
+        return {'ERROR': [{'line': f'Error: {str(e)}', 'price': 0}]}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        min_exalted = float(request.form.get('min_exalted', 10))
-        items = get_items(min_exalted)
+        min_exalted = float(request.form.get('min_exalted', 1))
+        items = scrape_poe_categories(min_exalted)
         return render_template('index.html', categories=items, min_exalted=min_exalted)
     return render_template('index.html')
 
