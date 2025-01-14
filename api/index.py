@@ -31,7 +31,7 @@ def fetch_category_data(category, min_exalted_price):
     return data
 
 def scrape_poe_categories(min_exalted_price):
-    categories = ['accessory', 'armour', 'flask', 'jewel', 'sanctum', 'weapon']
+    categories = ['accessory', 'armour']
     all_items = {}
     
     try:
