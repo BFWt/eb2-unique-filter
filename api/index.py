@@ -1,35 +1,23 @@
 from flask import Flask, render_template, request
 import requests
 import time
-import json
-import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__, template_folder='../templates')
 
-CACHE_DIR = 'cache'
+# Global cache dictionary
+CACHE = {}
 CACHE_DURATION = timedelta(hours=1)
 
-def get_cache_path(category):
-    return os.path.join(CACHE_DIR, f'{category}.json')
-
 def load_cached_data(category):
-    cache_path = get_cache_path(category)
-    if os.path.exists(cache_path):
-        with open(cache_path, 'r') as f:
-            cached = json.load(f)
-            if datetime.fromisoformat(cached['timestamp']) + CACHE_DURATION > datetime.now():
-                return cached['data']
+    if category in CACHE:
+        cached_data, timestamp = CACHE[category]
+        if timestamp + CACHE_DURATION > datetime.now():
+            return cached_data
     return None
 
 def save_cache(category, data):
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    cache_path = get_cache_path(category)
-    with open(cache_path, 'w') as f:
-        json.dump({
-            'timestamp': datetime.now().isoformat(),
-            'data': data
-        }, f)
+    CACHE[category] = (data, datetime.now())
 
 def fetch_category_data(category, min_exalted_price):
     cached_data = load_cached_data(category)
