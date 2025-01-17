@@ -32,7 +32,7 @@ def scrape_poe_categories(min_exalted_price):
                     
                     if exalted_price >= min_exalted_price:
                         items.append({
-                            'line': f'[Type] == "{item_type}" && [Rarity] == "Unique" # [StashItem] == "true" // {name} Value: {int(exalted_price)}',
+                            'line': f'[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(exalted_price)}',
                             'price': exalted_price
                         })
             
