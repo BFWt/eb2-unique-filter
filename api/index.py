@@ -27,23 +27,24 @@ def scrape_poe_categories(min_exalted_price, use_type=False):
             for item in data['items']:
                 if item['unique'] and 'latest_price' in item:
                     name = item['name']
-                    item_type = item['type']  # Typ aus den API-Daten
+                    item_type = item['type']
+                    nominal_price = item['latest_price']['nominal_price']  # Korrekte Variable
                     
-                    # Hier die Anpassung:
-                    type_prefix = f'[Type] == "{item_type}" ' if use_type else ''
-                    
-                    items.append({
-                        'line': f'{type_prefix}[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(exalted_price)}',
-                        'price': exalted_price
-                    })
+                    if nominal_price >= min_exalted_price:
+                        type_prefix = f'[Type] == "{item_type}" ' if use_type else ''
+                        items.append({
+                            'line': f'{type_prefix}[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(nominal_price)}',
+                            'price': nominal_price
+                        })
             
-            if items:  # Nur Kategorien mit Items hinzufügen
+            if items:
                 all_items[category] = sorted(items, key=lambda x: x['price'], reverse=True)
         
         return all_items
         
     except Exception as e:
         return {'ERROR': [{'line': f'Error: {str(e)}', 'price': 0}]}
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
