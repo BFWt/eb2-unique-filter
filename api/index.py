@@ -5,7 +5,7 @@ import time
 app = Flask(__name__, 
     template_folder='../templates')
 
-def scrape_poe_categories(min_exalted_price):
+def scrape_poe_categories(min_exalted_price, use_type=False):
     urls = [
         "https://poe2scout.com/api/items/accessory?per_page=200&league=Standard",
         "https://poe2scout.com/api/items/armour?per_page=200&league=Standard",
@@ -27,14 +27,15 @@ def scrape_poe_categories(min_exalted_price):
             for item in data['items']:
                 if item['unique'] and 'latest_price' in item:
                     name = item['name']
-                    item_type = item['type']
-                    exalted_price = item['latest_price']['nominal_price']
+                    item_type = item['type']  # Typ aus den API-Daten
                     
-                    if exalted_price >= min_exalted_price:
-                        items.append({
-                            'line': f'[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(exalted_price)}',
-                            'price': exalted_price
-                        })
+                    # Hier die Anpassung:
+                    type_prefix = f'[Type] == "{item_type}" ' if use_type else ''
+                    
+                    items.append({
+                        'line': f'{type_prefix}[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(exalted_price)}',
+                        'price': exalted_price
+                    })
             
             if items:  # Nur Kategorien mit Items hinzufügen
                 all_items[category] = sorted(items, key=lambda x: x['price'], reverse=True)
@@ -48,9 +49,14 @@ def scrape_poe_categories(min_exalted_price):
 def index():
     if request.method == 'POST':
         min_exalted = float(request.form.get('min_exalted', 1))
-        items = scrape_poe_categories(min_exalted)
-        return render_template('index.html', categories=items, min_exalted=min_exalted)
+        use_type = 'use_type' in request.form  # Checkbox Status
+        items = scrape_poe_categories(min_exalted, use_type)
+        return render_template('index.html', 
+                             categories=items, 
+                             min_exalted=min_exalted,
+                             use_type=use_type)
     return render_template('index.html')
+
 
 if __name__ == '__main__':
     app.run()
