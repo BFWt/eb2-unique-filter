@@ -133,8 +133,15 @@
             <div class="input-group">
                 <label>Minimum Exalted Price:</label>
                 <input type="number" name="min_exalted" step="0.1" value="{{ min_exalted|default(10) }}">
-                <button type="submit" onclick="showLoading()">Generate</button>
-            </div>
+    
+                <!-- Neue Checkbox -->
+                <label style="margin-left: 15px;">
+                    <input type="checkbox" name="use_type" id="use_type" {% if use_type %}checked{% endif %}>
+                    Include Type (eb only picks up types of expensive uniques)
+                </label>
+    
+    <button type="submit" onclick="showLoading()">Generate</button>
+</div>
         </form>
 
         <div class="loading" id="loading">
