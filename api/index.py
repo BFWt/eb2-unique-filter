@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import requests
+from datetime import datetime, timezone
 import time
 from dotenv import load_dotenv
 import os
@@ -60,7 +61,7 @@ def scrape_poe_categories():
                         "type": item_type,
                         "price": nominal_price,
                         "category": category,
-                        "timestamp": datetime.now()
+                        "timestamp": datetime.now(timezone.utc)  # UTC-Zeit
                     }
                     items.append(item_data)
             
@@ -105,7 +106,10 @@ def get_data_age():
         last_entry = collection.find_one(sort=[("timestamp", -1)])  # Neuestes Dokument
         if last_entry:
             last_timestamp = last_entry.get("timestamp")
-            age = datetime.now() - last_timestamp
+            if last_timestamp.tzinfo is None:
+                # Falls die Zeit keine Zeitzone hat, gehe davon aus, dass sie UTC ist
+                last_timestamp = last_timestamp.replace(tzinfo=timezone.utc)
+            age = datetime.now(timezone.utc) - last_timestamp  # Aktuelle Zeit in UTC
             hours, remainder = divmod(age.seconds, 3600)
             minutes = remainder // 60
             return f"{hours}h {minutes}min"
