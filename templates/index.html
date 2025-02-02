@@ -155,20 +155,20 @@ button[type="submit"] {
         <h1>Exiled Bot 2 Unique Item Filter Generator</h1>
         <form method="POST">
             <div class="input-group">
-    <div class="input-controls">
-        <div class="input-row">
-            <label>Minimum Exalted Price:</label>
-            <input type="number" name="min_exalted" step="0.1" value="{{ min_exalted|default(10) }}">
-        </div>
-        <div class="input-row">
-            <label>
-                <input type="checkbox" name="use_type" id="use_type" {% if use_type %}checked{% endif %}>
-                Use [Type]
-            </label>
-        </div>
-    </div>
-    <button type="submit" onclick="showLoading()">Generate</button>
-</div>
+                <div class="input-controls">
+                    <div class="input-row">
+                        <label>Minimum Exalted Price:</label>
+                        <input type="number" name="min_exalted" step="0.1" value="{{ min_exalted|default(10) }}">
+                    </div>
+                    <div class="input-row">
+                        <label>
+                            <input type="checkbox" name="use_type" id="use_type" {% if use_type %}checked{% endif %}>
+                            Use [Type]
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" onclick="showLoading()">Generate</button>
+            </div>
         </form>
 
         <div class="loading" id="loading">
@@ -177,9 +177,17 @@ button[type="submit"] {
                 <div class="progress-bar"></div>
             </div>
         </div>
-
         {% if categories %}
+        <!-- Anzeige des Datenalters -->
+        <div class="data-age">
+            <p>Data is {{ data_age }} old</p>
+        </div>
+
+       
+
+        
         <div class="results">
+
             <textarea id="filterOutput" readonly>{% for category, items in categories.items() %}
 // {{ category }}
 {% for item in items %}{{ item.line }}
