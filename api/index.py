@@ -87,7 +87,7 @@ def get_items_from_db(min_exalted_price, use_type=False):
         item_type = item["type"]
         price = item["price"]
         
-        type_prefix = f'[Type] == "{item_type}" ' if use_type else ''
+        type_prefix = f'[Type] == "{item_type}" && ' if use_type else ''
         line = f'{type_prefix}[Rarity] == "Unique" # [UniqueName] == "{name}" && [StashItem] == "true" // Exalted: {int(price)}'
         
         if category not in parsed_items:
