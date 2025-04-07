@@ -53,11 +53,10 @@ def scrape_poe_categories():
             
             items = []
             for item in data['items']:
-                if item['unique'] and 'latest_price' in item:
+                if item['unique'] and 'currentPrice' in item:
                     name = item['name']
                     item_type = item['type']
-                    nominal_price = item['latest_price']['nominal_price']
-                    
+                    nominal_price = item['currentPrice']
                     # Nur benötigte Daten speichern
                     item_data = {
                         "name": name,
