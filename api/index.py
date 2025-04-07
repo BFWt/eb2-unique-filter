@@ -27,15 +27,18 @@ def is_data_older_than_4_hours():
         return datetime.now() - last_timestamp > timedelta(hours=4)
     return True  # Falls keine Daten vorhanden sind
 
+# https://poe2scout.com/api/items/unique/accessory?page=1&perPage=25&league=Dawn%20of%20the%20Hunt&search=
+
+
 # Funktion: Daten von den URLs scrapen
 def scrape_poe_categories():
     urls = [
-        "https://poe2scout.com/api/items/accessory?per_page=200&league=Standard",
-        "https://poe2scout.com/api/items/armour?per_page=200&league=Standard",
-        "https://poe2scout.com/api/items/flask?per_page=200&league=Standard",
-        "https://poe2scout.com/api/items/jewel?per_page=200&league=Standard",
-        "https://poe2scout.com/api/items/sanctum?per_page=200&league=Standard",
-        "https://poe2scout.com/api/items/weapon?per_page=200&league=Standard"
+        "https://poe2scout.com/api/items/accessory?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
+        "https://poe2scout.com/api/items/armour?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
+        "https://poe2scout.com/api/items/flask?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
+        "https://poe2scout.com/api/items/jewel?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
+        "https://poe2scout.com/api/items/sanctum?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
+        "https://poe2scout.com/api/items/weapon?per_page=200&league=Dawn%20of%20the%20Hunt&search="
     ]
     
     all_items = {}
