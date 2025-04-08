@@ -2,22 +2,22 @@ from flask import Flask, render_template, request
 import requests
 from datetime import datetime, timezone
 import time
-# Removed dotenv import
+from dotenv import load_dotenv # Re-add dotenv import
 import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime, timedelta
-from .config import MONGODB_URI # Use relative import
+# Removed import from .config
 
-# Umgebungsvariablen laden - Removed
-# load_dotenv()
-# MONGO_URI = os.getenv("MONGO_URI") # Removed
+# Umgebungsvariablen laden
+load_dotenv() # Re-enable loading .env
+MONGO_URI = os.getenv("MONGO_URI") # Use environment variable
 
 app = Flask(__name__, template_folder='../templates')
 
 # Verbindung zur MongoDB herstellen
-client = MongoClient(MONGODB_URI, server_api=ServerApi('1')) # Use imported URI
-db = client.get_database("poe_items")  # Datenbankname - Consider using DB_NAME from config too? For now, keeping it hardcoded.
+client = MongoClient(MONGO_URI, server_api=ServerApi('1')) # Use MONGO_URI from env
+db = client.get_database("poe_items")  # Datenbankname
 collection = db["unique_items"]  # Collection für gescrapte Daten
 
 # Hilfsfunktion: Prüfen, ob Daten älter als 4 Stunden sind
