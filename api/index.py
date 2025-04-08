@@ -2,21 +2,22 @@ from flask import Flask, render_template, request
 import requests
 from datetime import datetime, timezone
 import time
-from dotenv import load_dotenv
+# Removed dotenv import
 import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime, timedelta
+from .config import MONGODB_URI # Use relative import
 
-# Umgebungsvariablen laden
-load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI")
+# Umgebungsvariablen laden - Removed
+# load_dotenv()
+# MONGO_URI = os.getenv("MONGO_URI") # Removed
 
 app = Flask(__name__, template_folder='../templates')
 
 # Verbindung zur MongoDB herstellen
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
-db = client.get_database("poe_items")  # Datenbankname
+client = MongoClient(MONGODB_URI, server_api=ServerApi('1')) # Use imported URI
+db = client.get_database("poe_items")  # Datenbankname - Consider using DB_NAME from config too? For now, keeping it hardcoded.
 collection = db["unique_items"]  # Collection für gescrapte Daten
 
 # Hilfsfunktion: Prüfen, ob Daten älter als 4 Stunden sind
@@ -33,12 +34,12 @@ def is_data_older_than_4_hours():
 # Funktion: Daten von den URLs scrapen
 def scrape_poe_categories():
     urls = [
-        "https://poe2scout.com/api/items/unique/accessory?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
-        "https://poe2scout.com/api/items/unique/armour?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
-        "https://poe2scout.com/api/items/unique/flask?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
-        "https://poe2scout.com/api/items/unique/jewel?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
-        "https://poe2scout.com/api/items/unique/sanctum?per_page=200&league=Dawn%20of%20the%20Hunt&search=",
-        "https://poe2scout.com/api/items/unique/weapon?per_page=200&league=Dawn%20of%20the%20Hunt&search="
+        "https://poe2scout.com/api/items/unique/accessory?perPage=500&league=Dawn%20of%20the%20Hunt",
+        "https://poe2scout.com/api/items/unique/armour?perPage=500&league=Dawn%20of%20the%20Hunt",
+        "https://poe2scout.com/api/items/unique/flask?perPage=500&league=Dawn%20of%20the%20Hunt",
+        "https://poe2scout.com/api/items/unique/jewel?perPage=500&league=Dawn%20of%20the%20Hunt",
+        "https://poe2scout.com/api/items/unique/sanctum?perPage=500&league=Dawn%20of%20the%20Hunt",
+        "https://poe2scout.com/api/items/unique/weapon?perPage=500&league=Dawn%20of%20the%20Hunt"
     ]
     
     all_items = {}
@@ -53,7 +54,8 @@ def scrape_poe_categories():
             
             items = []
             for item in data['items']:
-                if item['unique'] and 'currentPrice' in item:
+                # Assuming all items from these URLs are unique, removed item['unique'] check
+                if 'currentPrice' in item and item['currentPrice'] is not None: 
                     name = item['name']
                     item_type = item['type']
                     nominal_price = item['currentPrice']
