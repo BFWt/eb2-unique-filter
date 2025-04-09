@@ -1,0 +1,40 @@
+<!-- Currency Selection Section -->
+<div class="currency-section">
+  <h2>Currency Filter</h2>
+  <div class="section-controls">
+    {# Changed from currency-controls #}
+    <label class="select-all-label">
+      <input
+        type="checkbox"
+        id="select-all-currency"
+        onclick="toggleCheckboxes(this.checked, 'currency-checkbox')"
+      />
+      Select/Deselect All Currencies
+    </label>
+  </div>
+  <div class="section-grid currency-grid">
+    {# Added section-grid class #} {% if all_currency_types %} {% for currency
+    in all_currency_types %}
+    <label>
+      <input
+        type="checkbox"
+        name="currency_types"
+        value="{{ currency }}"
+        class="currency-checkbox"
+        {%
+        if
+        currency
+        in
+        selected_currencies
+        %}checked{%
+        endif
+        %}
+      />
+      {{ currency }}
+    </label>
+    {% endfor %} {% else %}
+    <p>No currency types available.</p>
+    {% endif %}
+  </div>
+</div>
+<!-- End Currency Selection Section -->

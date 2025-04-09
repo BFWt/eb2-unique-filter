@@ -1,0 +1,91 @@
+<div class="loading" id="loading">
+  <p>Generating filter...</p>
+  <div class="progress">
+    <div class="progress-bar"></div>
+  </div>
+</div>
+
+<!-- Combined Results Area -->
+{# Check if any results exist (adjust condition based on backend variables) #}
+{% if categories or currency_lines or rune_lines or unique_lines %} {# Added
+unique_lines check (assuming it will exist) #}
+<!-- Anzeige des Datenalters -->
+<div class="data-age">
+  <p>Data is {{ data_age }} old</p>
+</div>
+<div class="results">
+  <textarea id="filterOutput" readonly>
+{# --- Runes Section --- #}
+{% if rune_lines %}
+/////////////////////////////////////////////////////////////////////////////////////
+//                                                                                 //
+//                                     Runes                                       //
+//                                                                                 //
+/////////////////////////////////////////////////////////////////////////////////////
+
+{% for item in rune_lines %}{{ item.line }}
+{% endfor %}
+{% endif %}
+
+{# --- Currency Section --- #}
+{% if currency_lines %}
+{% if rune_lines %}
+
+{% endif %} {# Add separator if runes exist #}
+/////////////////////////////////////////////////////////////////////////////////////
+//                                                                                 //
+//                                  CURRENCY                                       //
+//                                                                                 //
+/////////////////////////////////////////////////////////////////////////////////////
+
+{% for item in currency_lines %}{{ item.line }}
+{% endfor %}
+{% endif %}
+
+{# --- Unique Items Section --- #}
+{% if unique_lines %} {# Assuming unique_lines will be passed from backend #}
+{% if currency_lines or rune_lines %}
+
+{% endif %} {# Add separator if currency or runes exist #}
+/////////////////////////////////////////////////////////////////////////////////////
+//                                                                                 //
+//                                UNIQUE ITEMS                                     //
+//                                                                                 //
+/////////////////////////////////////////////////////////////////////////////////////
+
+{% for item in unique_lines %}{{ item.line }}
+{% endfor %}
+{% endif %}
+
+{# --- Other Items Section (Original 'categories') --- #}
+{% if categories %}
+{% if currency_lines or rune_lines or unique_lines %}
+
+{% endif %} {# Add separator if other sections exist #}
+/////////////////////////////////////////////////////////////////////////////////////
+//                                                                                 //
+//                                OTHER ITEMS                                      //
+//                                                                                 //
+/////////////////////////////////////////////////////////////////////////////////////
+
+{% for category, items in categories.items() %}
+// {{ category }}
+{% for item in items %}{{ item.line }}
+{% endfor %}
+
+{% endfor %}{# End categories loop #}
+{% endif %}{# End if categories #}
+</textarea
+  >
+  <div class="button-group">
+    <button class="copy-button" onclick="copyToClipboard()">
+      <svg class="copy-icon" viewBox="0 0 24 24">
+        <path
+          d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+        />
+      </svg>
+      Copy to Clipboard
+    </button>
+  </div>
+</div>
+{% endif %} {# Closes the outer results check #}

@@ -10,7 +10,7 @@ from modules.currency import get_currency_lines, CURRENCY_TYPES
 # Import rune components
 from modules.runes import RUNE_TYPES, get_rune_lines
 
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # Route: Hauptseite
 @app.route('/', methods=['GET', 'POST'])

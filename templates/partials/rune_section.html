@@ -1,0 +1,55 @@
+<!-- Rune Selection Section -->
+<div class="rune-section">
+  <h2>Rune Filter</h2>
+  <div class="section-controls">
+    {# Changed from rune-controls #}
+    <label class="select-all-label">
+      <input
+        type="checkbox"
+        id="select-all-runes"
+        onclick="toggleRuneCheckboxes(this.checked, null)"
+      />
+      Select/Deselect All Runes
+    </label>
+    {% if all_rune_types %} {% for category in all_rune_types.keys() %}
+    <label class="select-all-label">
+      <input
+        type="checkbox"
+        id="select-all-{{ category|lower }}-runes"
+        onclick="toggleRuneCheckboxes(this.checked, '{{ category|lower }}')"
+        class="rune-group-checkbox"
+        data-category="{{ category|lower }}"
+      />
+      Select/Deselect {{ category }} Runes
+    </label>
+    {% endfor %} {% endif %}
+  </div>
+  <div class="section-grid rune-grid">
+    {# Added section-grid class #} {% if all_rune_types %} {% for category,
+    runes in all_rune_types.items() %}
+    <div class="category-header">{{ category }}</div>
+    {% for rune in runes %}
+    <label>
+      <input
+        type="checkbox"
+        name="rune_types"
+        value="{{ rune }}"
+        class="rune-checkbox rune-{{ category|lower }}"
+        data-category="{{ category|lower }}"
+        {%
+        if
+        rune
+        in
+        selected_runes
+        %}checked{%
+        endif
+        %}
+      />
+      {{ rune }}
+    </label>
+    {% endfor %} {% endfor %} {% else %}
+    <p>No rune types available.</p>
+    {% endif %}
+  </div>
+</div>
+<!-- End Rune Selection Section -->

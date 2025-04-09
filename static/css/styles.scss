@@ -1,0 +1,235 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #0d120d;
+  color: #b3b3b3;
+}
+.container {
+  max-width: 90%;
+  margin: 0 auto;
+  background: #161f16;
+  padding: 20px;
+  border-radius: 8px;
+  border: solid 1px #090c09;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* Wichtig: Verhindert, dass Padding die Breite vergrößert */
+}
+h1 {
+  color: #b3b3b3;
+  margin-bottom: 30px;
+  text-align: center;
+}
+h2 {
+  // Added default h2 style based on section usage
+  color: #b3b3b3;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #1c261f;
+  margin-bottom: 15px; // Added margin-bottom for spacing
+}
+.input-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.input-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-row label {
+  min-width: 150px;
+}
+
+button[type="submit"] {
+  align-self: flex-end;
+  height: 40px;
+}
+input[type="number"] {
+  padding: 10px;
+  border: 1px solid #161f16;
+  background: #131712;
+  color: #b3b3b3;
+  border-radius: 4px;
+  width: 150px;
+  margin-right: 10px;
+}
+button {
+  padding: 10px 20px;
+  background: #131712;
+  border: none;
+  color: #b3b3b3;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #1c261f;
+}
+.results {
+  width: 100%;
+  margin-top: 20px;
+  box-sizing: border-box; /* Wichtig für die Scrollbar */
+}
+textarea {
+  width: 100%;
+  height: 400px;
+  margin-top: 20px;
+  padding: 15px;
+  background: #1c261f;
+  color: #b3b3b3;
+  border: 1px solid #090c09;
+  border-radius: 4px;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box; /* Wichtig: Padding wird in Breite eingerechnet */
+  overflow-x: hidden; /* Verhindert horizontales Scrollen */
+  white-space: pre-wrap; /* Zeilenumbruch für lange Zeilen */
+}
+.loading {
+  display: none;
+  text-align: center;
+  margin: 20px 0;
+}
+.progress {
+  width: 100%;
+  height: 4px;
+  background: #090c09;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #131712;
+  animation: progress 2s ease-in-out infinite;
+}
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.copy-button {
+  padding: 10px 20px;
+  background: #131712;
+  border: none;
+  color: #b3b3b3;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copy-button:hover {
+  background: #1c261f;
+}
+
+.copy-button.success {
+  background: #1a3320;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Styles for Section Grids and Controls */
+.section-controls {
+  // Generic controls class
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.section-controls .select-all-label {
+  margin-bottom: 0; /* Reset margin */
+  font-weight: bold;
+  display: block;
+}
+
+.section-grid {
+  // Generic grid class
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(200px, 1fr)
+  ); /* Responsive grid */
+  gap: 10px 20px; /* Row and column gap */
+  margin-top: 10px;
+  max-height: 300px; /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
+  padding: 10px;
+  background: #131712;
+  border-radius: 4px;
+  border: 1px solid #090c09;
+}
+
+.section-grid label {
+  display: block; /* Ensure labels take full width in grid cell */
+  cursor: pointer;
+}
+
+.section-grid label input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.section-grid .category-header {
+  // Specific to grids with categories (like runes)
+  grid-column: 1 / -1; /* Span full width */
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #1c261f;
+  padding-bottom: 5px;
+}
+
+.section-grid .category-header:first-child {
+  margin-top: 0; /* Remove top margin for the first header */
+}
+
+/* Specific section adjustments if needed */
+.currency-grid {
+  max-height: 200px; /* Keep specific height for currency */
+  gap: 10px; // Simpler gap for currency
+}
+
+.unique-grid {
+  // Inherits from .section-grid, add specific overrides if needed later
+}
+
+.rune-grid {
+  // Inherits from .section-grid
+}
+
+.data-age {
+  // Style for data age display
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #888;
+}

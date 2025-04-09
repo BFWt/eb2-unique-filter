@@ -1,0 +1,163 @@
+<script>
+  function showLoading() {
+    document.getElementById("loading").style.display = "block";
+  }
+
+  function copyToClipboard() {
+    const textarea = document.getElementById("filterOutput");
+    textarea.select();
+    document.execCommand("copy"); // Note: execCommand is deprecated but often used in simple examples. Consider Clipboard API for modern browsers.
+
+    const button = document.querySelector(".copy-button");
+    const originalContent = button.innerHTML; // Store original content
+    button.textContent = "Copied!";
+    button.classList.add("success");
+
+    setTimeout(() => {
+      button.innerHTML = originalContent; // Restore original content
+      button.classList.remove("success");
+    }, 2000);
+  }
+
+  // Generic function to toggle checkboxes based on class
+  function toggleCheckboxes(checked, checkboxClass) {
+    const checkboxes = document.querySelectorAll(`.${checkboxClass}`);
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = checked;
+    });
+    // If it's a group toggle (like runes or potentially uniques), update the main 'select all' for that group
+    if (checkboxClass.includes("-group-")) {
+      const groupType = checkboxClass.split("-group-")[0]; // e.g., 'rune' or 'unique'
+      updateSelectAllCheckbox(`select-all-${groupType}s`); // Update the main select-all for this type
+    }
+  }
+
+  // Specific function for Runes due to categories
+  function toggleRuneCheckboxes(checked, category) {
+    const selector = category ? `.rune-${category}` : ".rune-checkbox";
+    const checkboxes = document.querySelectorAll(selector);
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = checked;
+    });
+    // Update the main "Select All Runes" checkbox state
+    updateSelectAllRuneCheckbox();
+    // Update the specific group checkbox state if applicable
+    if (category) {
+      updateRuneGroupCheckbox(category);
+    } else {
+      // If toggling all, update all group checkboxes
+      document.querySelectorAll(".rune-group-checkbox").forEach((groupCb) => {
+        groupCb.checked = checked;
+      });
+    }
+  }
+
+  // Function to update the state of a main "Select All" checkbox (e.g., currency, runes, uniques)
+  function updateSelectAllCheckbox(selectAllId, individualCheckboxClass) {
+    const selectAllCheckbox = document.getElementById(selectAllId);
+    const individualCheckboxes = document.querySelectorAll(
+      `.${individualCheckboxClass}`
+    );
+    if (!selectAllCheckbox || individualCheckboxes.length === 0) return;
+
+    let allChecked = true;
+    individualCheckboxes.forEach((cb) => {
+      if (!cb.checked) allChecked = false;
+    });
+    selectAllCheckbox.checked = allChecked;
+  }
+
+  // Function to update the state of the main "Select All Runes" checkbox
+  function updateSelectAllRuneCheckbox() {
+    updateSelectAllCheckbox("select-all-runes", "rune-checkbox");
+  }
+
+  // Function to update the state of a specific rune group checkbox
+  function updateRuneGroupCheckbox(category) {
+    const groupCheckbox = document.getElementById(
+      `select-all-${category}-runes`
+    );
+    const categoryCheckboxes = document.querySelectorAll(`.rune-${category}`);
+    if (!groupCheckbox || categoryCheckboxes.length === 0) return;
+
+    let allInCategoryChecked = true;
+    categoryCheckboxes.forEach((cb) => {
+      if (!cb.checked) allInCategoryChecked = false;
+    });
+    groupCheckbox.checked = allInCategoryChecked;
+  }
+
+  // --- Potentially add similar functions for Unique categories if needed ---
+  // function updateSelectAllUniqueCheckbox() { ... }
+  // function updateUniqueGroupCheckbox(category) { ... }
+
+  // Add event listeners on DOMContentLoaded
+  document.addEventListener("DOMContentLoaded", () => {
+    // --- Generic Checkbox Update Logic ---
+    function setupCheckboxListeners(selectAllId, individualClass) {
+      const selectAllCheckbox = document.getElementById(selectAllId);
+      const individualCheckboxes = document.querySelectorAll(
+        `.${individualClass}`
+      );
+
+      individualCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          updateSelectAllCheckbox(selectAllId, individualClass);
+          // If this checkbox belongs to a category group (like runes/uniques), update that group's checkbox too
+          if (checkbox.dataset.category) {
+            const category = checkbox.dataset.category;
+            const type = individualClass.split("-")[0]; // 'rune' or 'unique'
+            if (type === "rune") {
+              updateRuneGroupCheckbox(category);
+            }
+            // else if (type === 'unique') {
+            //     updateUniqueGroupCheckbox(category); // Add this if uniques have categories
+            // }
+          }
+        });
+      });
+
+      // Set initial state of the main "Select All" checkbox
+      if (selectAllCheckbox) {
+        updateSelectAllCheckbox(selectAllId, individualClass);
+      }
+    }
+
+    // Setup for Currency
+    setupCheckboxListeners("select-all-currency", "currency-checkbox");
+
+    // Setup for Uniques (using the generic listener)
+    setupCheckboxListeners("select-all-uniques", "unique-checkbox");
+    // If uniques get categories, add listeners for group checkboxes here
+
+    // --- Specific Rune Checkbox Logic (due to categories) ---
+    const selectAllRunesCheckbox = document.getElementById("select-all-runes");
+    const individualRuneCheckboxes =
+      document.querySelectorAll(".rune-checkbox");
+    const groupRuneCheckboxes = document.querySelectorAll(
+      ".rune-group-checkbox"
+    );
+
+    individualRuneCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        const category = checkbox.dataset.category;
+        updateSelectAllRuneCheckbox(); // Update main select all
+        if (category) {
+          updateRuneGroupCheckbox(category); // Update specific group select all
+        }
+      });
+    });
+
+    // Set initial state for Rune checkboxes
+    if (selectAllRunesCheckbox) {
+      updateSelectAllRuneCheckbox(); // Set main select all state
+    }
+    groupRuneCheckboxes.forEach((groupCb) => {
+      // Set group select all states
+      const category = groupCb.dataset.category;
+      if (category) {
+        updateRuneGroupCheckbox(category);
+      }
+    });
+  });
+</script>

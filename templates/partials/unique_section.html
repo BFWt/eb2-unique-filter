@@ -1,0 +1,41 @@
+<!-- Unique Items Selection Section -->
+<div class="unique-section">
+  <h2>Unique Items Filter</h2>
+  <div
+    class="input-group"
+    style="
+      margin-bottom: 10px;
+      border-bottom: 1px solid #1c261f;
+      padding-bottom: 20px;
+    "
+  >
+    {# Added some styling for separation #}
+    <div class="input-controls">
+      <div class="input-row">
+        <label>Minimum Exalted Price:</label>
+        <input
+          type="number"
+          name="min_exalted"
+          step="0.1"
+          value="{{ min_exalted|default(10) }}"
+        />
+
+        <label>
+          <input
+            type="checkbox"
+            name="use_type"
+            id="use_type"
+            {%
+            if
+            use_type
+            %}checked{%
+            endif
+            %}
+          />
+          Use [Type]
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Unique Items Selection Section -->
